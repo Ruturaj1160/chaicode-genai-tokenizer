@@ -1,10 +1,33 @@
-from google import genai
-from google.genai import types
+from dotenv import load_dotenv
+from openai import OpenAI
+import os
 
-# Only run this block for Gemini Developer API
-client = genai.Client(api_key='AIzaSyDL4qS94MYtH3vykI-Z9NkwlppPbAS2fKs')
 
-response = client.models.generate_content(
-    model='gemini-2.0-flash-001', contents='Why is the sky blue?'
+load_dotenv()
+
+client = OpenAI(
+    api_key = os.getenv("GEMINI_API_KEY"), 
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
-print(response.text)
+
+system_prompt = """
+You are helpuy
+"""
+
+reponse = client.chat.completions.create(
+    model="gemini-1.5-turbo", # or "gemini-1.5-turbo-16k"
+    messages=[
+        {
+            "role": "user",
+            "content": "What is the capital of France?"
+        }
+    ],
+    temperature=0.7,
+    max_tokens=100,
+    top_p=1.0,
+    frequency_penalty=0.0,
+    presence_penalty=0.0,
+)
+
+print("Response:")
+print(reponse.choices[0].message.content)
