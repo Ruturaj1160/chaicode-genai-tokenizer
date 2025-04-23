@@ -1,6 +1,7 @@
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
+import requests
 import os
 
 
@@ -9,7 +10,12 @@ load_dotenv()
 
 def get_weather(city: str):
     print(f" 🛠️: Tool called", city)
-    return "26 Degree"
+    url = f"https://wttr.in/{city}?format=%C+t"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return f"The weather in {city} is {response.text}"
+    raise "failed to get data from tool"
 
 
 available_tools = {
