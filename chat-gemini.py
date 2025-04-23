@@ -5,29 +5,26 @@ import os
 
 load_dotenv()
 
-client = OpenAI(
+try:
+    client = OpenAI(
     api_key = os.getenv("GEMINI_API_KEY"), 
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-)
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
 
-system_prompt = """
-You are helpuy
-"""
+    system_prompt = """
+    You are helpfull
+    """
 
-reponse = client.chat.completions.create(
-    model="gemini-1.5-turbo", # or "gemini-1.5-turbo-16k"
-    messages=[
-        {
-            "role": "user",
-            "content": "What is the capital of France?"
-        }
-    ],
-    temperature=0.7,
-    max_tokens=100,
-    top_p=1.0,
-    frequency_penalty=0.0,
-    presence_penalty=0.0,
-)
+    reponse = client.chat.completions.create(
+        model="gemini-2.0-flash", # or "gemini-1.5-turbo-16k"
+        messages=[
+            {
+                "role": "user",
+                "content": "What is the capital of France?"
+            }
+        ],
+    )
 
-print("Response:")
-print(reponse.choices[0].message.content)
+    print("Response:")
+    print(reponse.choices[0].message.content)
+except Exception as e:
+    print(f" error: {e}")
