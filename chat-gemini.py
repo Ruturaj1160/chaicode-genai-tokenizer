@@ -27,8 +27,6 @@ available_tools = {
     }
 }
 
-user_query = input('>')
-
 
 try:
     client = OpenAI(
@@ -75,43 +73,47 @@ try:
         {"role": "system", "content": system_prompt}
     ]
 
-    messages.append({"role": "user", "content": user_query})
-
     while True:
 
-        reponse = client.chat.completions.create(
-            model="gemini-2.0-flash",  # or "gemini-1.5-turbo-16k"
-            response_format={"type": "json_object"},
-            messages=messages
-        )
-        parsed_output = json.loads(reponse.choices[0].message.content)
-        print(parsed_output)
-        messages.append(
-            {"role": "assistant", "content": json.dumps(parsed_output)})
-
-        if parsed_output.get("step") == "plan":
-            print(f"🧠 :{parsed_output.get('content')}")
-
-        if parsed_output.get("step") == "action":
-            tool_name = parsed_output.get("function")
-            tool_input = parsed_output.get("input")
-
-            if available_tools.get(tool_name, False):
-                output = available_tools[tool_name].get("fn")(tool_input)
-                messages.append(
-                    {
-                        "role": "assistant",
-                        "content": json.dumps({
-                            "step": "observe",
-                            "output": output
-                        })
-                    }
-                )
-                continue
-
-        if parsed_output.get("step") == "output":
-            print(f"🤖: {parsed_output.get('content')}")
+        user_query = input('--> ')
+        if user_query == "exit":
             break
+        messages.append({"role": "user", "content": user_query})
+
+        while True:
+
+            reponse = client.chat.completions.create(
+                model="gemini-2.0-flash",  # or "gemini-1.5-turbo-16k"
+                response_format={"type": "json_object"},
+                messages=messages
+            )
+            parsed_output = json.loads(reponse.choices[0].message.content)
+            messages.append(
+                {"role": "assistant", "content": json.dumps(parsed_output)})
+
+            if parsed_output.get("step") == "plan":
+                print(f"🧠 :{parsed_output.get('content')}")
+
+            if parsed_output.get("step") == "action":
+                tool_name = parsed_output.get("function")
+                tool_input = parsed_output.get("input")
+
+                if available_tools.get(tool_name, False):
+                    output = available_tools[tool_name].get("fn")(tool_input)
+                    messages.append(
+                        {
+                            "role": "assistant",
+                            "content": json.dumps({
+                                "step": "observe",
+                                "output": output
+                            })
+                        }
+                    )
+                    continue
+
+            if parsed_output.get("step") == "output":
+                print(f"🤖: {parsed_output.get('content')}")
+                break
 
 
 except Exception as e:
