@@ -20,10 +20,20 @@ def get_weather(city: str):
         return f"SSL Error: {e}"
 
 
+def run_command(command):
+    result = os.system(command=command)
+    return result
+
+
 available_tools = {
     "get_weather": {
         "fn": get_weather,
         "description": "Takes a city name as input and returns the weather for the city"
+    },
+    "run_command": {
+        "fn": run_command,
+        "description": "Takes a command as input to execute on system and returns output"
+
     }
 }
 
@@ -55,6 +65,8 @@ try:
     }}
 
     Available Tools:
+    - get_weather: Takes a city name as input and returns the current weather for the city
+    - run_command: Takes a command as input to execute on system and returns output
 
 
 
